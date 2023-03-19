@@ -307,8 +307,14 @@ function makeMonthDiv(){
         let monthCell=document.createElement('div');
         monthCell.innerHTML=e;
         monthCell.className='monthCell';
-        monthCell.onclick=()=>{
-            onClickMonthCell(ind);
+        var currMonth = new Date(selectedYear,ind+1,-1);
+        if(currMonth<Today){
+            monthCell.classList.add('pastMonths');
+        }
+        else{
+            monthCell.onclick=()=>{
+                onClickMonthCell(ind);
+            }
         }
         monthDiv.appendChild(monthCell);        
         if(startMonth!=null && ind==startMonth && selectedYear==startYear){
@@ -411,7 +417,7 @@ async function onClickDateCell(date,clickable){
 
             let blockFound=0;
 
-            document.getElementById(date.toISOString()).classList.add('selectedDateCell','startingDateCell')
+            document.getElementById(date.toISOString()).classList.add('selectedDateCell','startingDateCell',"endingDateCell")
             for (let ind = new Date(date).getTime(); ind < new Date(selectedYear,selectedMonth+1,0).getTime(); ind+=(24*60*60*1000)) {
                 if(document.getElementById(new Date(ind).toISOString()).classList.contains('partiallyFilledDateCell') || document.getElementById(new Date(ind).toISOString()).classList.contains('fullyFilledDateCell')){
                     firstBlockedDate=ind;
@@ -475,9 +481,11 @@ async function onClickDateCell(date,clickable){
             // console.log(cells)
             cells.forEach(e=>{
                 let dc=new Date(e.id).getTime();
-                e.classList.remove('hoverDateCell')
+                e.classList.remove('selectedDateCell','startingDateCell','endingDateCell','hoverDateCell')
                 if(st<=dc && dc<=ed)
                     e.classList.add('selectedDateCell');
+                if(dc==st)
+                    e.classList.add('startingDateCell')
                 if(dc==ed)
                     e.classList.add('endingDateCell')
             })
@@ -494,15 +502,15 @@ async function onClickDateCell(date,clickable){
             endDay=null;
             firstBlockedDate=null;
         }
-        var allSelected=document.querySelectorAll('.selectedDateCell')
-        // console.log(allSelected)
-        allSelected.forEach(e=>{
-            e.classList.remove('startingDateCell','endingDateCell')
-        })
-        if(allSelected.length>0){
-            allSelected[0].classList.add('startingDateCell')
-            allSelected[allSelected.length-1].classList.add('endingDateCell')
-        }
+        // var allSelected=document.querySelectorAll('.selectedDateCell')
+        // // console.log(allSelected)
+        // allSelected.forEach(e=>{
+        //     e.classList.remove('startingDateCell','endingDateCell')
+        // })
+        // if(allSelected.length>0){
+        //     allSelected[0].classList.add('startingDateCell')
+        //     allSelected[allSelected.length-1].classList.add('endingDateCell')
+        // }
     }
     displayTime()
 }
@@ -597,12 +605,15 @@ async function makeDayDiv(){
                 // console.log(new Date(startYear,startMonth,startDate).toDateString())
                 if(startTime!=null && new Date(startYear,startMonth,startDate).toDateString()==divStartDate.toDateString()){
                     dayCell.classList.add('selectedDateCell')
-                    // dayCell.classList.add('startingDateCell')
+                    dayCell.classList.add('startingDateCell')
+                    if(endDate==null){
+                        dayCell.classList.add('endingDateCell')
+                    }
                 }
                 if(endDate!=null && (new Date(startYear,startMonth,startDate).getTime()<=divStartDate.getTime() && new Date(endTime).getTime()>=divStartDate.getTime())){
                     dayCell.classList.add('selectedDateCell')
                     if(new Date(endTime).getTime()==divStartDate.getTime()){
-                        // dayCell.classList.add('endingDateCell')
+                        dayCell.classList.add('endingDateCell')
                     }
                 }
 
@@ -635,12 +646,12 @@ async function makeDayDiv(){
             dayDiv.appendChild(dayCell);
         }
     }
-    var allSelected=document.querySelectorAll('.selectedDateCell')
-    // console.log(allSelected)
-    if(allSelected.length>0){
-        allSelected[0].classList.add('startingDateCell')
-        allSelected[allSelected.length-1].classList.add('endingDateCell')
-    }
+    // var allSelected=document.querySelectorAll('.selectedDateCell')
+    // // console.log(allSelected)
+    // if(allSelected.length>0){
+    //     allSelected[0].classList.add('startingDateCell')
+    //     allSelected[allSelected.length-1].classList.add('endingDateCell')
+    // }
 }
 
 // ---------------------- TIME SECTION ----------------------
@@ -741,6 +752,17 @@ function onClickTimeCell(time){
             startDate=selectedDate;
             startTime=stdate;
             startClock=time;
+        }
+        else if(makeTimeMin(time).time==makeTimeMin(startClock).time){
+            startTime=null
+            endTime=null
+            startClock=null
+            pseudoEndClock=null;
+            endClock=null
+            maxEndClockTime=null;
+            makeTimeDiv();
+            displayTime();
+            return;
         }
         else{
             let stdate=new Date(0);
@@ -932,7 +954,7 @@ function printDate(date,st){
     return (date.getDate()+'-'+date.getMonth()+'-'+date.getFullYear())+(st?(' T '+st+':00'):'');
 }
 function displayTime(){
-    displayTimeDiv.innerHTML=(startTime?printDate(startTime,startClock):'Start')+' - '+(endTime?printDate(endTime,endClock):'End');
+    displayTimeDiv.innerHTML=(startTime?printDate(startTime,startClock):'Start')+' - '+(startTime?printDate(endTime?endTime:startTime,endClock?endClock:pseudoEndClock):'End');
     startYearDiv.innerHTML=(startYear!=null?startYear:Today.getFullYear());
 
     startMonthDiv.innerHTML=Months[(startMonth!=null?startMonth:Today.getMonth())].substring(0,3);

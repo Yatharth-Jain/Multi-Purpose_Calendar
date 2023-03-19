@@ -152,7 +152,7 @@ body{
 .partiallyFilledDateCell{
     background-color: rgb(252, 245, 145);
 }
-.pastDays{
+.pastDays,.pastMonths{
     background-color: rgb(197, 194, 194);
 }
 .occupiedTimeCell{
