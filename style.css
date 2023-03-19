@@ -1,0 +1,160 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+}
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+#calenderDiv{
+    position: relative;
+    width: 400px;
+    height: 300px;
+    background-color: rgb(195, 255, 255);
+    overflow-x: hidden;
+    border-radius: 10px;
+    border: 10px solid rgb(82, 255, 255);
+}
+#calenderContent{
+    display: flex;
+    position: absolute;
+    width: 400%;
+    height: 100%;
+    /* background-color: blueviolet; */
+    transition: 0.4s ease-in-out;
+}
+.dateDisplay{
+    padding: 10px;
+    margin: 2px;
+    background-color: rgb(165, 204, 204);
+}
+
+
+.activeDateBtn{
+    background-color: rgb(62, 255, 255) !important;
+    background-color: rgb(62, 255, 255) !important;
+}
+
+.calDivs{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+.calHeading{
+    height: 10%;
+    display: flex;
+    font-weight: bolder ;
+    justify-content: center;
+    align-items: center;    
+}
+#yearDiv,#monthDiv,#dayDiv,#timeDiv{
+    overflow-y: auto;
+    width: 100%;
+    /* max-height: 80%; */
+    z-index: 10;
+}
+#yearDiv,#timeDiv{
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    grid-gap: 1px;
+    max-height: 80%;
+}
+#monthDiv,#dayDiv{
+    height: 80%;
+}
+#monthDiv{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    /* grid-template-rows: repeat(3,1fr); */
+    grid-gap: 1px;
+}
+#dayDiv{
+    display: grid;
+    grid-template-columns: repeat(7,1fr);
+    grid-template-rows: repeat(7,1fr);
+}
+.monthBtnDiv,.dayBtnDiv,.timeBtnDiv{
+    display: flex;
+    justify-content: space-around;
+    height: 10%;
+}
+.yearCell,.monthCell,.dayCell,.timeCell{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(77, 76, 76, 0.404);
+}
+.yearCell,.timeCell{
+    height: 50px;
+}
+.dayTitle{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid rgb(77, 76, 76);
+    background-color: rgba(77, 76, 76,0.4);
+}
+.hoverDateCell{
+    background-color: rgb(155, 216, 196) ;
+}
+.selectedYearCell,.selectedMonthCell{
+    background-color: rgb(0, 225, 241) !important;
+}
+.selectedDateCell,.selectedTimeCell{
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-left: 0px;
+    border-right: 0px;
+    background-color: rgb(0, 225, 241) !important;
+
+}
+.startingDateCell{
+    border-left: 1px solid black;
+}
+.endingDateCell{
+    border-right: 1px solid black;
+}
+.startingTimeCell{
+    border-left: 1px solid black;
+}
+.endingTimeCell{
+    border-right: 1px solid black;
+}
+
+
+#monthPreBtn,#dayPreBtn,#timePreBtn{
+    position: absolute;    
+    top: 50%;
+    left: 0;
+    width: 20px;
+    text-align: center;
+    color:red;
+    font-weight: 800;
+    font-size: larger;
+    cursor: pointer;
+    user-select: none;
+}
+#monthNextBtn,#dayNextBtn,#timeNextBtn{
+    position: absolute;    
+    top: 50%;
+    right: 0;
+    width: 20px;
+    text-align: center;
+    color:red;
+    font-weight: 800;
+    font-size: larger;
+    cursor: pointer;
+    user-select: none;
+}
+.partiallyFilledDateCell{
+    background-color: rgb(252, 245, 145);
+}
+.pastDays{
+    background-color: rgb(197, 194, 194);
+}
+.occupiedTimeCell{
+    background-color: rgb(199, 248, 125);
+}

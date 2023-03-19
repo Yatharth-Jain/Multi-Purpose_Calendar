@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <select name="type" id="typeSelector" disabled>
+            <option value="1">Single</option>
+            <option value="2">Time Range</option>
+            <option value="3">Date Range</option>
+        </select>
+        <input type="text" id="selectInterval" value="00:36">
+        <button id="submitButton">submit</button>
+        <div id="checkboxDiv">
+            <input type="checkbox" name="selectHolidays" id="selectHolidays"><label for="selectHolidays">selectHolidays</label>
+        </div>
+        <div style="display: flex;">
+            <div id="startingDateDiv" style="display: flex;">
+                <div id="startYearDiv" class="dateDisplay"></div>
+                <div id="startMonthDiv" class="dateDisplay"></div>
+                <div id="startDateDiv" class="dateDisplay"></div>
+                <div id="startDayDiv" class="dateDisplay"></div>
+                <div id="startTimeDiv" class="dateDisplay" style="display: none;"></div>
+            </div>
+            <div id="endingDateDiv" style="display: none;">
+                <div class="dateDisplay">-</div>
+                <div id="endYearDiv" class="dateDisplay"></div>
+                <div id="endMonthDiv" class="dateDisplay"></div>
+                <div id="endDateDiv" class="dateDisplay"></div>
+                <div id="endDayDiv" class="dateDisplay"></div>
+            </div>
+        </div>
+        <div id="calenderDiv">
+            <div id="calenderContent" style="left: 0%;">
+                <div class="calDivs">
+                    <div class="calHeading">Year</div>
+                    <div id="yearDiv"></div>
+
+                </div>
+                <div class="calDivs">
+                    <div class="calHeading">Month</div>
+                    <div class="monthBtnDiv">
+                        <div id="monthPreBtn">&lt;</div>
+                        <div id="monthCurrBtn">currYear</div>
+                        <div id="monthNextBtn">&gt;</div>
+                    </div>
+                    <div id="monthDiv"></div>
+
+                </div>
+                <div class="calDivs">
+                    <div class="calHeading">Days</div>
+                    <div class="dayBtnDiv">
+                        <div id="dayPreBtn">&lt;</div>
+                        <div id="dayCurrBtn">currMonth</div>
+                        <div id="dayNextBtn">&gt;</div>
+                    </div>
+                    <div id="dayDiv"></div>
+
+                </div>
+                <div class="calDivs">
+                    <div class="calHeading">Time</div>
+                    <div class="timeBtnDiv">
+                        <div id="timePreBtn">&lt;</div>
+                        <div id="timeCurrBtn">currDay</div>
+                        <div id="timeNextBtn">&gt;</div>
+                    </div>
+                    <div id="timeDiv"></div>
+                </div>
+            </div>
+        </div>
+        <p id="displayTimeDiv"></p>
+    </div>
+    
+    <script type="module" src="./index.js"></script>
+</body>
+
+</html>
