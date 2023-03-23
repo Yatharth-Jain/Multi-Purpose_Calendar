@@ -242,6 +242,7 @@ function onClickYearCell(cell){
     makeMonthDiv();
     displayTime();
     calenderContent.style.left='-100%'
+    calenderDiv.style.height=(calDivs[1].offsetHeight+20)+'px';
 
 }
 
@@ -258,6 +259,7 @@ function makeYearDiv(){
         yearDiv.appendChild(yearCell)
         if(startYear!=null && startYear==e)yearCell.classList.add('selectedYearCell')
     })
+    calenderDiv.style.height=(calDivs[0].offsetHeight+20)+'px';
 }
 
 // ---------------------- MONTH SECTION ----------------------
@@ -271,6 +273,7 @@ monthPreBtn.onclick=()=>{
 monthCurrBtn.onclick=()=>{
     makeYearDiv();
     calenderContent.style.left='0%'
+    calenderDiv.style.height=(calDivs[0].offsetHeight+20)+'px';
 }
 monthNextBtn.onclick=()=>{
     selectedYear++;
@@ -303,6 +306,7 @@ function onClickMonthCell(month){
     // console.log(newDate);
     makeDayDiv();
     calenderContent.style.left='-200%'
+    calenderDiv.style.height=(calDivs[2].offsetHeight+20)+'px';
     displayTime();
 }
 
@@ -331,6 +335,7 @@ function makeMonthDiv(){
         }
 
     })
+    calenderDiv.style.height=(calDivs[1].offsetHeight+20)+'px';
 }
 
 // ---------------------- Days SECTION ----------------------
@@ -347,6 +352,7 @@ dayPreBtn.onclick=()=>{
 dayCurrBtn.onclick=()=>{
     
     calenderContent.style.left='-100%'
+    calenderDiv.style.height=(calDivs[1].offsetHeight+20)+'px';
 }
 dayNextBtn.onclick=()=>{
     selectedMonth++;
@@ -406,7 +412,8 @@ async function onClickDateCell(date,clickable){
             endTime=null;
             selectedDate=date.getDate();
             makeTimeDiv();
-            calenderContent.style.left='-300%'        
+            calenderContent.style.left='-300%'  
+            calenderDiv.style.height=(calDivs[3].offsetHeight+20)+'px';      
             
         }
     }
@@ -651,6 +658,7 @@ async function makeDayDiv(){
     //     allSelected[0].classList.add('startingDateCell')
     //     allSelected[allSelected.length-1].classList.add('endingDateCell')
     // }
+    calenderDiv.style.height=(calDivs[2].offsetHeight+20)+'px';
 }
 
 // ---------------------- TIME SECTION ----------------------
@@ -672,6 +680,7 @@ timePreBtn.onclick=()=>{
 timeCurrBtn.onclick=()=>{
     makeDayDiv();
     calenderContent.style.left='-200%'
+    calenderDiv.style.height=(calDivs[2].offsetHeight+20)+'px';
 }
 timeNextBtn.onclick=()=>{
     let timeDate=new Date(0)
@@ -871,18 +880,21 @@ async function makeTimeDiv(){
         allSelectedTimeCells[allSelectedTimeCells.length-1].classList.add('endingTimeCell')
     }
     
+    calenderDiv.style.height=(calDivs[3].offsetHeight+20)+'px';
 }
 
 // ---------------------- DATE BUTTONS ----------------------
 startYearDiv.onclick=()=>{
     makeYearDiv()
     calenderContent.style.left='0%'
+    calenderDiv.style.height=(calDivs[0].offsetHeight+20)+'px';
 }
 
 startMonthDiv.onclick=()=>{
     selectedYear=parseInt(startYearDiv.innerHTML);
     makeMonthDiv()
     calenderContent.style.left='-100%'
+    calenderDiv.style.height=(calDivs[1].offsetHeight+20)+'px';
 }
 startDateDiv.onclick=()=>{
     selectedYear=parseInt(startYearDiv.innerHTML);
@@ -893,6 +905,7 @@ startDateDiv.onclick=()=>{
     })
     makeDayDiv();
     calenderContent.style.left='-200%'
+    calenderDiv.style.height=(calDivs[2].offsetHeight+20)+'px';
 }
 startTimeDiv.onclick=()=>{
     selectedYear=parseInt(startYearDiv.innerHTML);
@@ -904,18 +917,21 @@ startTimeDiv.onclick=()=>{
     selectedDate=parseInt(startDateDiv.innerHTML);
     makeTimeDiv();
     calenderContent.style.left='-300%'
+    calenderDiv.style.height=(calDivs[3].offsetHeight+20)+'px';
 
 }
 
 endYearDiv.onclick=()=>{
     makeYearDiv()
     calenderContent.style.left='0%'
+    calenderDiv.style.height=(calDivs[0].offsetHeight+20)+'px';
 }
 
 endMonthDiv.onclick=()=>{
     selectedYear=parseInt(endYearDiv.innerHTML);
     makeMonthDiv()
     calenderContent.style.left='-100%'
+    calenderDiv.style.height=(calDivs[1].offsetHeight+20)+'px';
 }
 endDateDiv.onclick=()=>{
     selectedYear=parseInt(endYearDiv.innerHTML);
@@ -926,6 +942,7 @@ endDateDiv.onclick=()=>{
     })
     makeDayDiv();
     calenderContent.style.left='-200%'
+    calenderDiv.style.height=(calDivs[2].offsetHeight+20)+'px';
 }
 
 // ---------------------- TYPE & SUBMIT SECTION ----------------------
@@ -1017,6 +1034,7 @@ function resetCalender(){
     makeMonthDiv()
     displayTime()
     calenderContent.style.left='-100%'
+    calenderDiv.style.height=(calDivs[1].offsetHeight+20)+'px';
 }
 
 // ---------------------- TYPE & SUBMIT SECTION ----------------------
