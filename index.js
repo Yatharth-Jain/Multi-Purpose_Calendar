@@ -3,12 +3,17 @@
 // Calender Swaping Div
 let calenderContent=document.getElementById('calenderContent')
 let displayTimeDiv=document.getElementById('displayTimeDiv')
+let calenderDiv=document.getElementById('calenderDiv')
+let calDivs=document.querySelectorAll('.calDivs');
 
 // Type Selector
 let typeSelector=document.getElementById('typeSelector')
 
 // Interval Selector
 let selectInterval=document.getElementById('selectInterval')
+
+// Days Limit Selector
+let selectDaysLimit=document.getElementById('selectDaysLimit')
 
 // Submit Button
 let submitButton=document.getElementById('submitButton');
@@ -47,6 +52,7 @@ let DayNames=["Sun","Mon","Tue","Wed","Thur","Fri","Sat"]
 let Time=[9,10,11,12,13,14,15,16,17]
 let startAvailableTime=makeTimeMin("9:00").time;
 let endAvailableTime=makeTimeMin("14:00").time;
+let weekStartDay = 0;
 
 // Calender States
 let selectedYear;
@@ -54,6 +60,7 @@ let selectedMonth;
 let selectedDate;
 let seletedMode=1;
 let timeInterval=makeTimeMin("00:36").time;
+let daysLimit=10;
 let startTime=null;
 let endTime=null;
 
@@ -216,7 +223,7 @@ function makeTimeMin(time){
 function onClickYearCell(cell){
     // console.log(cell.innerHTML)
     selectedYear=cell.innerHTML;
-    if(seletedMode==3 && startDate!=null && endDate==null){
+    if(seletedMode==1 && startDate!=null && endDate==null){
         endYear=selectInterval;
     }
     else{
@@ -262,6 +269,7 @@ monthPreBtn.onclick=()=>{
     makeMonthDiv();
 }
 monthCurrBtn.onclick=()=>{
+    makeYearDiv();
     calenderContent.style.left='0%'
 }
 monthNextBtn.onclick=()=>{
@@ -274,7 +282,7 @@ monthNextBtn.onclick=()=>{
 // Function for Month Selection
 function onClickMonthCell(month){
     selectedMonth=month
-    if(seletedMode==3 && startTime!=null && endTime==null){
+    if(seletedMode==1 && startTime!=null && endTime==null){
         endYear=selectedYear;
         endMonth=selectedMonth;
     }
@@ -337,6 +345,7 @@ dayPreBtn.onclick=()=>{
     makeDayDiv()
 }
 dayCurrBtn.onclick=()=>{
+    
     calenderContent.style.left='-100%'
 }
 dayNextBtn.onclick=()=>{
@@ -353,9 +362,8 @@ async function onClickDateCell(date,clickable){
     if((clickable==0 && holidaySelectable==0 && seletedMode!=2)|| document.getElementById(date.toISOString()).classList.contains('pastDays')){
         console.log("Nahi")
         return;
-
     }
-    if(seletedMode==1 || seletedMode==2){
+    if(seletedMode==2){
         startYear=selectedYear;
         startMonth=selectedMonth;
         startDate=selectedDate;
@@ -386,27 +394,23 @@ async function onClickDateCell(date,clickable){
             endDay=date.getDay();
 
             document.getElementById(date.toISOString()).classList.add('selectedDateCell','startingDateCell','endingDateCell')
-            if(seletedMode==1){
-                startTime=date;
-                endTime=date;
-            }
-            else{
-                try{
-                    document.getElementById('selectedDateCell').forEach(e=>e.classList.remove('selectedDateCell','startingDateCell','endingDateCell'))
-                }catch(e){};
-                startClock=null;
-                pseudoEndClock=null;
 
-                endClock=null;
-                startTime=null;
-                endTime=null;
-                selectedDate=date.getDate();
-                makeTimeDiv();
-                calenderContent.style.left='-300%'        
-            }
+            try{
+                document.getElementById('selectedDateCell').forEach(e=>e.classList.remove('selectedDateCell','startingDateCell','endingDateCell'))
+            }catch(e){};
+            startClock=null;
+            pseudoEndClock=null;
+
+            endClock=null;
+            startTime=null;
+            endTime=null;
+            selectedDate=date.getDate();
+            makeTimeDiv();
+            calenderContent.style.left='-300%'        
+            
         }
     }
-    else if(seletedMode==3){
+    else if(seletedMode==1){
         selectedDate=date.getDate();
         if(!startTime){
             startDay=date.getDay();
@@ -439,6 +443,20 @@ async function onClickDateCell(date,clickable){
                 startDay=null;
                 endDay=null;
                 firstBlockedDate=null;
+                displayTime()
+                return;
+            }
+            else if(Math.abs(ed-st)>=daysLimit*24*60*60*1000){
+                let cells=document.querySelectorAll('.dayCell')
+                cells.forEach(e=>e.classList.remove('selectedDateCell','startingDateCell','endingDateCell','hoverDateCell'))
+                startTime=null
+                endTime=null
+                startDate=null;
+                endDate=null;
+                startDay=null;
+                endDay=null;
+                firstBlockedDate=null;
+                alert("Days Limit Exeed")
                 displayTime()
                 return;
             }
@@ -477,6 +495,7 @@ async function onClickDateCell(date,clickable){
                 displayTime()
                 return;
             } 
+
             let cells=document.querySelectorAll('.dayCell')
             // console.log(cells)
             cells.forEach(e=>{
@@ -517,10 +536,10 @@ async function onClickDateCell(date,clickable){
 
 function onMouseOverDayCell(date){
     // console.log("aya")
-    if(seletedMode==1 || seletedMode==2){
+    if(seletedMode==2){
         document.getElementById(date.toISOString()).classList.add('hoverDateCell')
     }
-    else if(seletedMode==3){
+    else if(seletedMode==1){
         if(!startTime){
             document.getElementById(date.toISOString()).classList.add('hoverDateCell')
         }
@@ -544,27 +563,7 @@ function onMouseOverDayCell(date){
     }
 }
 function onMouseLeaveDayCell(date){
-    if(seletedMode==1 || seletedMode==2){
-        document.getElementById(date.toISOString()).classList.remove('hoverDateCell')   
-    }
-    else if(seletedMode==3){
-        if(!startTime){
-            document.getElementById(date.toISOString()).classList.remove('hoverDateCell')
-        }
-        else{
-            let st=new Date(startTime).getTime();
-            let ed=new Date(date).getTime();
-            if(ed<st){
-                return;
-            }
-            let cells=document.querySelectorAll('.dayCell')
-            // console.log(cells)
-            cells.forEach(e=>{
-                let dc=new Date(e.id).getTime();
-                e.classList.remove('hoverDateCell');
-            })
-        }
-    }
+    document.querySelectorAll(".hoverDateCell").forEach(e=>e.classList.remove("hoverDateCell"))
     
 }
 
@@ -579,7 +578,7 @@ async function makeDayDiv(){
     let OccupiedDays=(!(dataMonth==selectedMonth && dataYear==selectedYear)?await fetchData(new Date(selectedYear,selectedMonth).getTime(),new Date(selectedYear,selectedMonth+1).getTime()):generatedData);
     dayDiv.innerHTML='';
 
-    for (let day = 1; day < 8; day++) {
+    for (let day = weekStartDay; day < weekStartDay+7; day++) {
         let dayTitle= document.createElement('div')
         dayTitle.innerHTML=DayNames[day%7];
         dayTitle.className='dayTitle';
@@ -587,7 +586,7 @@ async function makeDayDiv(){
         
     }
     for (let wk = 0; wk < 6; wk++) {
-        for (let day = 1; day < 8; day++) {
+        for (let day = weekStartDay; day < weekStartDay+7; day++) {
             let dayCell= document.createElement('div')
             dayCell.className='dayCell';
             dayDiv.appendChild(dayCell)
@@ -949,6 +948,10 @@ selectInterval.onchange=()=>{
     displayTime()
 }
 
+selectDaysLimit.onchange=()=>{
+    daysLimit=selectDaysLimit.value
+}
+
 
 function printDate(date,st){
     return (date.getDate()+'-'+date.getMonth()+'-'+date.getFullYear())+(st?(' T '+st+':00'):'');
@@ -969,7 +972,7 @@ function displayTime(){
         startTimeDiv.style.display='block'
     }
 
-    endingDateDiv.style.display=((seletedMode==3 && endDate!=null)?'flex':'none')
+    endingDateDiv.style.display=((seletedMode==1 && endDate!=null)?'flex':'none')
     endYearDiv.innerHTML=(endYear!=null?endYear:startYear!=null?startYear:Today.getFullYear());
     endMonthDiv.innerHTML=Months[(endMonth!=null?endMonth:startMonth!=null?startMonth:Today.getMonth())].substring(0,3);
     endDateDiv.innerHTML=(endDate!=null?endDate:startDate!=null?startDate:Today.getDate());
@@ -981,15 +984,16 @@ function displayTime(){
     startDayDiv.className=(startDate!=null?'activeDateBtn':'')+" dateDisplay"
     startTimeDiv.className="activeDateBtn dateDisplay"
 
-    endYearDiv.className=(startDate!=null?'activeDateBtn':'')+" dateDisplay"
-    endMonthDiv.className=(startDate!=null?'activeDateBtn':'')+" dateDisplay"
-    endDateDiv.className=(startDate!=null?'activeDateBtn':'')+" dateDisplay"
-    endDayDiv.className=(startDate!=null?'activeDateBtn':'')+" dateDisplay"
+    endYearDiv.className=(startDate!=null && startYear!=endYear?'activeDateBtn':'')+" dateDisplay"
+    endYearDiv.style.display=(startYear!=endYear?'inline-block':'none')
+    endMonthDiv.className=(startDate!=null ?'activeDateBtn':'')+" dateDisplay"
+    endMonthDiv.style.display=(!(startYear==endYear && startMonth==endMonth)?'inline-block':'none')
+    endDateDiv.className=(startDate!=null ?'activeDateBtn':'')+" dateDisplay"
+    endDayDiv.className=(startDate!=null ?'activeDateBtn':'')+" dateDisplay"
 }
 
 function resetCalender(){
     seletedMode=typeSelector.value;
-    // console.log(seletedMode)
     startTime=null
     endTime=null
     startDate=null;
@@ -1006,25 +1010,27 @@ function resetCalender(){
     selectHolidays.checked=false;
     dataMonth=null;
     checkboxDiv.style.display=(seletedMode==1)?'inline-block':'none';
+    selectDaysLimit.style.display=(seletedMode==1)?'inline-block':'none';
     selectInterval.style.display=(seletedMode==2)?'inline-block':'none';
 
-    makeYearDiv()
+    selectedYear=Today.getFullYear();
+    makeMonthDiv()
     displayTime()
-    calenderContent.style.left='0%'
+    calenderContent.style.left='-100%'
 }
 
 // ---------------------- TYPE & SUBMIT SECTION ----------------------
 
 submitButton.onclick=()=>{
-    if(seletedMode==1){
-        if(startDate!=null && startMonth!=null && startYear!=null){
-            alert(`Single= ${startDate}-${startMonth+1}-${startYear}`)
-            resetCalender();
-        }
-        else{
-            alert("Not Suitable")
-        }
-    }
+    // if(seletedMode==1){
+    //     if(startDate!=null && startMonth!=null && startYear!=null){
+    //         alert(`Single= ${startDate}-${startMonth+1}-${startYear}`)
+    //         resetCalender();
+    //     }
+    //     else{
+    //         alert("Not Suitable")
+    //     }
+    // }
     if(seletedMode==2){
         if(startClock!=null && startDate!=null && startMonth!=null && startYear!=null){
             alert(`Time Range= ${startDate}-${startMonth+1}-${startYear} T ${startClock}:00-${endClock!=null?endClock:pseudoEndClock}:00`)
@@ -1035,7 +1041,7 @@ submitButton.onclick=()=>{
         }
 
     }
-    if(seletedMode==3){
+    if(seletedMode==1){
         if(startDate!=null && startMonth!=null && startYear!=null){
             alert(`Date Range= ${startDate}-${startMonth+1}-${startYear} <-> ${endDate!=null?endDate:startDate}-${(endDate!=null?endMonth:startMonth)+1}-${endDate!=null?endYear:startYear}`)
             resetCalender();
