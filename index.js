@@ -15,6 +15,9 @@ let selectInterval=document.getElementById('selectInterval')
 // Days Limit Selector
 let selectDaysLimit=document.getElementById('selectDaysLimit')
 
+// Clock Limit Selector
+let selectClockLimit=document.getElementById('selectClockLimit')
+
 // Submit Button
 let submitButton=document.getElementById('submitButton');
 
@@ -61,6 +64,7 @@ let selectedDate;
 let seletedMode=1;
 let timeInterval=makeTimeMin("00:36").time;
 let daysLimit=10;
+let clockLimit=10;
 let startTime=null;
 let endTime=null;
 
@@ -554,18 +558,27 @@ function onMouseOverDayCell(date){
             let st=new Date(startTime).getTime();
             let ed=new Date(date).getTime();
             if(ed<st){
+                let temp=st;
+                st=ed;
+                ed=temp;
+            }
+            if(ed-st >= daysLimit*24*60*60*1000){
                 return;
             }
-            if(firstBlockedDate!=null && new Date(date).getTime()>=firstBlockedDate)
-                return;
-
+            
             let cells=document.querySelectorAll('.dayCell')
             // console.log(cells)
+            let f=1;
             cells.forEach(e=>{
                 let dc=new Date(e.id).getTime();
-                if(st<=dc && dc<=ed)
+                if(st<=dc && dc<=ed){
+                    if(e.classList.contains('partiallyFilledDateCell'))f=0;
                     e.classList.add('hoverDateCell');
+                }
             })
+            if(f==0){
+                document.querySelectorAll(".hoverDateCell").forEach(e=>e.classList.remove("hoverDateCell"))
+            }
         }
     }
 }
@@ -612,7 +625,7 @@ async function makeDayDiv(){
                 if(startTime!=null && new Date(startYear,startMonth,startDate).toDateString()==divStartDate.toDateString()){
                     dayCell.classList.add('selectedDateCell')
                     dayCell.classList.add('startingDateCell')
-                    if(endDate==null){
+                    if(endDate==null || seletedMode==2){
                         dayCell.classList.add('endingDateCell')
                     }
                 }
@@ -782,6 +795,17 @@ function onClickTimeCell(time){
             endDate=selectedDate;
             endTime=stdate;
             endClock=makeTimeStr(makeTimeMin(time).time+timeInterval).str;
+        }
+        if(makeTimeMin(endClock).time-makeTimeMin(startClock).time>clockLimit*timeInterval){
+            alert("Selected More time than set")
+            startTime=null
+            endTime=null
+            startClock=null
+            pseudoEndClock=null;
+            endClock=null
+            maxEndClockTime=null;
+            makeTimeDiv();
+            return;
         }
         var possible=1;
         for (let t = makeTimeMin(startClock).time; t < makeTimeMin(endClock).time; t+=timeInterval) {
@@ -966,7 +990,14 @@ selectInterval.onchange=()=>{
 }
 
 selectDaysLimit.onchange=()=>{
+    if(selectDaysLimit.value<1)selectDaysLimit.value=1
     daysLimit=selectDaysLimit.value
+
+}
+
+selectClockLimit.onchange=()=>{
+    if(selectClockLimit.value<1)selectClockLimit.value=1
+    clockLimit=selectClockLimit.value
 }
 
 
@@ -1028,6 +1059,7 @@ function resetCalender(){
     dataMonth=null;
     checkboxDiv.style.display=(seletedMode==1)?'inline-block':'none';
     selectDaysLimit.style.display=(seletedMode==1)?'inline-block':'none';
+    selectClockLimit.style.display=(seletedMode==2)?'inline-block':'none';
     selectInterval.style.display=(seletedMode==2)?'inline-block':'none';
 
     selectedYear=Today.getFullYear();
