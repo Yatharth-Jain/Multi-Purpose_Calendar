@@ -430,8 +430,6 @@ async function onClickDateCell(date,clickable){
             startYear=selectedYear;    
             startTime=date;
 
-            let blockFound=0;
-
             document.getElementById(date.toISOString()).classList.add('selectedDateCell','startingDateCell',"endingDateCell")
             for (let ind = new Date(date).getTime(); ind < new Date(selectedYear,selectedMonth+1,0).getTime(); ind+=(24*60*60*1000)) {
                 if(document.getElementById(new Date(ind).toISOString()).classList.contains('partiallyFilledDateCell') || document.getElementById(new Date(ind).toISOString()).classList.contains('fullyFilledDateCell')){
@@ -458,16 +456,17 @@ async function onClickDateCell(date,clickable){
                 return;
             }
             else if(Math.abs(ed-st)>=daysLimit*24*60*60*1000){
-                let cells=document.querySelectorAll('.dayCell')
-                cells.forEach(e=>e.classList.remove('selectedDateCell','startingDateCell','endingDateCell','hoverDateCell'))
-                startTime=null
                 endTime=null
-                startDate=null;
                 endDate=null;
-                startDay=null;
                 endDay=null;
                 firstBlockedDate=null;
+                startDay=date.getDay();
+                startDate=selectedDate;
+                startMonth=selectedMonth;
+                startYear=selectedYear;    
+                startTime=date;
                 alert("Days Limit Exeed")
+                makeDayDiv();
                 displayTime()
                 return;
             }
@@ -798,13 +797,23 @@ function onClickTimeCell(time){
         }
         if(makeTimeMin(endClock).time-makeTimeMin(startClock).time>clockLimit*timeInterval){
             alert("Selected More time than set")
-            startTime=null
             endTime=null
-            startClock=null
-            pseudoEndClock=null;
             endClock=null
             maxEndClockTime=null;
+            let timeCell=document.getElementById(time);
+            timeCell.classList.add('selectedTimeCell');
+            let stdate=new Date(0);
+            stdate.setFullYear(selectedYear);
+            stdate.setMonth(selectedMonth);
+            stdate=new Date(stdate.getTime()+((selectedDate-1)*24*60 + makeTimeMin(time).time)*60*1000);
+            startClock=time;
+            pseudoEndClock=makeTimeStr(makeTimeMin(time).time+timeInterval).str;
+            startYear=selectedYear;
+            startMonth=selectedMonth;
+            startDate=selectedDate;
+            startTime=stdate;
             makeTimeDiv();
+            displayTime();
             return;
         }
         var possible=1;
@@ -850,6 +859,44 @@ function onClickTimeCell(time){
     displayTime()
 }
 
+function onMouseOverTimeCell(date){
+    console.log("aya")
+    if(!startTime){
+        document.getElementById(date).classList.add('hoverTimeCell')
+    }
+    else if(!endTime){
+        let st=makeTimeMin(startClock).time;
+        let ed=makeTimeMin(date).time;
+        if(ed<st){
+            let temp=st;
+            st=ed;
+            ed=temp;
+        }
+        if(ed-st >= clockLimit*timeInterval){
+            return;
+        }
+        
+        let cells=document.querySelectorAll('.timeCell')
+        let f=1;
+        cells.forEach(e=>{
+            let dc=makeTimeMin(e.id).time;
+            if(st<=dc && dc<=ed){
+                if(e.classList.contains('occupiedTimeCell'))f=0;
+                e.classList.add('hoverTimeCell');
+            }
+        })
+        if(f==0){
+            document.querySelectorAll(".hoverTimeCell").forEach(e=>e.classList.remove("hoverTimeCell"))
+        }
+        
+    }
+}
+
+function onMouseLeaveTimeCell(){
+    document.querySelectorAll(".hoverTimeCell").forEach(e=>e.classList.remove("hoverTimeCell"))
+    
+}
+
 async function makeTimeDiv(){
     timeDiv.innerHTML='Loading';
     timeCurrBtn.innerHTML=selectedDate+" "+Months[selectedMonth]+" "+selectedYear;
@@ -878,6 +925,19 @@ async function makeTimeDiv(){
                 else console.log("UnClickable")
             }
         }(timejson.str);
+        timeCell.onmouseover=function(time){
+            return ()=>{
+                if(clickable)
+                onMouseOverTimeCell(time);
+                // else console.log("UnClickable")
+            }
+        }(timejson.str);
+        timeCell.onmouseleave=function(){
+            return ()=>{
+                if(clickable)
+                    onMouseLeaveTimeCell();
+            }
+        }();
         if(selectedDate==startDate && selectedMonth==startMonth && selectedYear==startYear){
             if(startClock!=null && makeTimeMin(startClock).time==t){
                 timeCell.classList.add('selectedTimeCell')

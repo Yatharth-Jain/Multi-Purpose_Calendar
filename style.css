@@ -104,7 +104,7 @@ body{
     border: 2px solid rgb(77, 76, 76);
     background-color: rgba(77, 76, 76,0.4);
 }
-.hoverDateCell{
+.hoverDateCell,.hoverTimeCell{
     background-color: rgb(155, 216, 196) ;
 }
 .selectedYearCell,.selectedMonthCell{
