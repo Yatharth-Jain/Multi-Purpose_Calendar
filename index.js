@@ -369,7 +369,7 @@ dayNextBtn.onclick=()=>{
 }
 
 async function onClickDateCell(date,clickable){
-    if((clickable==0 && holidaySelectable==0 && seletedMode!=2)|| document.getElementById(date.toISOString()).classList.contains('pastDays')){
+    if((clickable==0 && holidaySelectable==0)|| document.getElementById(date.toISOString()).classList.contains('pastDays')){
         console.log("Nahi")
         return;
     }
@@ -606,6 +606,7 @@ async function makeDayDiv(){
     }
     for (let wk = 0; wk < 6; wk++) {
         for (let day = weekStartDay; day < weekStartDay+7; day++) {
+            if(day==weekStartDay && divStartDate.getMonth()!=selectedMonth)break;
             let dayCell= document.createElement('div')
             dayCell.className='dayCell';
             dayDiv.appendChild(dayCell)
@@ -613,7 +614,8 @@ async function makeDayDiv(){
                 var clickable=1;
                 dayCell.innerHTML=divStartDate.getDate();
                 dayCell.id=divStartDate.toISOString();
-                if(OccupiedDays[divStartDate.toDateString()]){
+                // console.log(divStartDate.toDateString(),"->",(endAvailableTime-startAvailableTime)/timeInterval);
+                if(OccupiedDays[divStartDate.toDateString()] && ((seletedMode==2 && OccupiedDays[divStartDate.toDateString()].length==(Math.floor((endAvailableTime-startAvailableTime)/timeInterval)+1)) || (seletedMode==1))){
                     dayCell.classList.add('partiallyFilledDateCell')
                     clickable=0;
                 }
