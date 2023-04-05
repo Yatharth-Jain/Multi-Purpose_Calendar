@@ -116,7 +116,7 @@ async function wholeFetch(){
     fetchedData=await fetch(url).then((response) => response.json())
         .then((json) =>{
             console.log("Fetched")
-            // console.log(Data)
+            console.log(json)
             // Data.forEach(e=>{
             //     console.log(e.start,"------",e.end)
             // })
@@ -184,7 +184,8 @@ async function fetchData(startingTime,endingTime,query){
             let dateStr=new Date(dt).toDateString();
             for (let t = startAvailableTime*60*1000; t <= endAvailableTime*60*1000; t+=timeInterval*60*1000){
                 // console.log(new Date(stdate).toUTCString(),new Date(dt+t).toUTCString(),new Date(eddate).toUTCString());
-                if(((stdate.getTime()+60*60*1000)<=dt+t && dt+t<(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)<(dt+t+timeInterval*60*1000) && (dt+t+timeInterval*60*1000)<=(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)>=(dt+t) && (dt+t+timeInterval*60*1000)>=(eddate.getTime()+60*60*1000))){
+                // if(((stdate.getTime()+60*60*1000)<=dt+t && dt+t<(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)<(dt+t+timeInterval*60*1000) && (dt+t+timeInterval*60*1000)<=(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)>=(dt+t) && (dt+t+timeInterval*60*1000)>=(eddate.getTime()+60*60*1000))){
+                if(((stdate.getTime())<=dt+t && dt+t<(eddate.getTime())) || ((stdate.getTime())<(dt+t+timeInterval*60*1000) && (dt+t+timeInterval*60*1000)<=(eddate.getTime())) || ((stdate.getTime())>=(dt+t) && (dt+t+timeInterval*60*1000)>=(eddate.getTime()))){
                     if(!returnData[dateStr])returnData[dateStr]=[]
                         returnData[dateStr].push(makeTimeStr(t/60000).str);
                 }
@@ -204,7 +205,7 @@ async function fetchData(startingTime,endingTime,query){
         }
         
     }
-    // console.log(returnData)
+    console.log(returnData)
     generatedData=returnData;
     
     return returnData;
