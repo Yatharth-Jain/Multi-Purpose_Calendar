@@ -177,8 +177,9 @@ async function fetchData(startingTime,endingTime,query){
     // console.log(stInd,edInd)
     let returnData={}
     for (let index = stInd; index <= edInd ; index++) {
-        let stdate=new Date(fetchedData[index].start);
-        let eddate=new Date(fetchedData[index].end);
+        console.log(new Date().getTimezoneOffset()*1000)
+        let stdate=new Date(new Date(fetchedData[index].start).getTime()-new Date().getTimezoneOffset()*1000*60);
+        let eddate=new Date(new Date(fetchedData[index].end).getTime()-new Date().getTimezoneOffset()*1000*60);
 
         for (let dt = Math.max(new Date(stdate.getTime()-stdate%(24*60*60*1000)).getTime(),startingTime); dt <= Math.min(new Date(eddate.getTime()-eddate%(24*60*60*1000)).getTime(),endingTime-1); dt+=(24*60*60*1000)) {
             let dateStr=new Date(dt).toDateString();
