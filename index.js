@@ -177,21 +177,40 @@ async function fetchData(startingTime,endingTime,query){
     // console.log(stInd,edInd)
     let returnData={}
     for (let index = stInd; index <= edInd ; index++) {
-        console.log(new Date().getTimezoneOffset()*1000)
-        let stdate=new Date(new Date(fetchedData[index].start).getTime()-new Date().getTimezoneOffset()*1000*60);
-        let eddate=new Date(new Date(fetchedData[index].end).getTime()-new Date().getTimezoneOffset()*1000*60);
+        let stdate=new Date(fetchedData[index].start);
+        let eddate=new Date(fetchedData[index].end);
 
-        for (let dt = Math.max(new Date(stdate.getTime()-stdate%(24*60*60*1000)).getTime(),startingTime); dt <= Math.min(new Date(eddate.getTime()-eddate%(24*60*60*1000)).getTime(),endingTime-1); dt+=(24*60*60*1000)) {
+        // for (let dt = Math.max(new Date(stdate.getTime()-stdate%(24*60*60*1000)).getTime(),startingTime); dt <= Math.min(new Date(eddate.getTime()-eddate%(24*60*60*1000)).getTime(),endingTime-1); dt+=(24*60*60*1000)) {
+        //     let dateStr=new Date(dt).toDateString();
+        //     console.log('====================================');
+        //     console.log(new Date(new Date(dt).toDateString()));
+        //     console.log('====================================');
+        //     for (let t = startAvailableTime*60*1000; t <= endAvailableTime*60*1000; t+=timeInterval*60*1000){
+        //         let dte=new Date(new Date(dt).toDateString()).getTime();
+        //         console.log(new Date(stdate),new Date(dte+t),new Date(eddate));
+        //         // if(((stdate.getTime()+60*60*1000)<=dte+t && dte+t<(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)<(dte+t+timeInterval*60*1000) && (dte+t+timeInterval*60*1000)<=(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)>=(dte+t) && (dte+t+timeInterval*60*1000)>=(eddate.getTime()+60*60*1000))){
+        //         if(((stdate.getTime())<=dte+t && dte+t<(eddate.getTime())) || ((stdate.getTime())<(dte+t+timeInterval*60*1000) && (dte+t+timeInterval*60*1000)<=(eddate.getTime())) || ((stdate.getTime())>=(dte+t) && (dte+t+timeInterval*60*1000)>=(eddate.getTime()))){
+        //             if(!returnData[dateStr])returnData[dateStr]=[]
+        //                 returnData[dateStr].push(makeTimeStr(t/60000).str);
+        //         }
+        //     }
+        // }
+        for (let dt = stdate.getTime(); dt <= eddate.getTime(); dt+=(24*60*60*1000)) {
             let dateStr=new Date(dt).toDateString();
+            // console.log('====================================');
+            // console.log(new Date(new Date(dt).toDateString()));
+            // console.log('====================================');
             for (let t = startAvailableTime*60*1000; t <= endAvailableTime*60*1000; t+=timeInterval*60*1000){
-                // console.log(new Date(stdate).toUTCString(),new Date(dt+t).toUTCString(),new Date(eddate).toUTCString());
-                // if(((stdate.getTime()+60*60*1000)<=dt+t && dt+t<(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)<(dt+t+timeInterval*60*1000) && (dt+t+timeInterval*60*1000)<=(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)>=(dt+t) && (dt+t+timeInterval*60*1000)>=(eddate.getTime()+60*60*1000))){
-                if(((stdate.getTime())<=dt+t && dt+t<(eddate.getTime())) || ((stdate.getTime())<(dt+t+timeInterval*60*1000) && (dt+t+timeInterval*60*1000)<=(eddate.getTime())) || ((stdate.getTime())>=(dt+t) && (dt+t+timeInterval*60*1000)>=(eddate.getTime()))){
+                let dte=new Date(new Date(dt).toDateString()).getTime();
+                // console.log(new Date(stdate),new Date(dte+t),new Date(eddate));
+                // if(((stdate.getTime()+60*60*1000)<=dte+t && dte+t<(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)<(dte+t+timeInterval*60*1000) && (dte+t+timeInterval*60*1000)<=(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)>=(dte+t) && (dte+t+timeInterval*60*1000)>=(eddate.getTime()+60*60*1000))){
+                if(((stdate.getTime())<=dte+t && dte+t<(eddate.getTime())) || ((stdate.getTime())<(dte+t+timeInterval*60*1000) && (dte+t+timeInterval*60*1000)<=(eddate.getTime())) || ((stdate.getTime())>=(dte+t) && (dte+t+timeInterval*60*1000)>=(eddate.getTime()))){
                     if(!returnData[dateStr])returnData[dateStr]=[]
                         returnData[dateStr].push(makeTimeStr(t/60000).str);
                 }
             }
         }
+        
     }
 
     if(query=='check'){
