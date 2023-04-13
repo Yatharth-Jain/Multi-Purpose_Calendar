@@ -613,6 +613,9 @@ async function makeDayDiv(){
     let divStartDate = new Date(0);
     divStartDate.setYear(selectedYear)
     divStartDate.setMonth(selectedMonth)
+    divStartDate.setDate(1);
+
+
     dayDiv.innerHTML='Loading';
 
     let OccupiedDays=(!(dataMonth==selectedMonth && dataYear==selectedYear)?await fetchData(new Date(selectedYear,selectedMonth).getTime(),new Date(selectedYear,selectedMonth+1).getTime()):generatedData);
@@ -627,7 +630,7 @@ async function makeDayDiv(){
     }
     for (let wk = 0; wk < 6; wk++) {
         for (let day = weekStartDay; day < weekStartDay+7; day++) {
-            if(day==weekStartDay && divStartDate.getMonth()!=selectedMonth)break;
+            if(day==weekStartDay && divStartDate.getMonth()>selectedMonth)break;
             let dayCell= document.createElement('div')
             dayCell.className='dayCell';
             dayDiv.appendChild(dayCell)
