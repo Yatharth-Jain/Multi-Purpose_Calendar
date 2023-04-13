@@ -611,6 +611,8 @@ async function makeDayDiv(){
     // console.log(selectedYear,selectedMonth)
     dayCurrBtn.innerHTML=Months[selectedMonth]+" "+selectedYear;
     let divStartDate = new Date(0);
+    divStartDate.setHours(0)
+    divStartDate.setMinutes(0)
     divStartDate.setYear(selectedYear)
     divStartDate.setMonth(selectedMonth)
     divStartDate.setDate(1);
@@ -630,6 +632,7 @@ async function makeDayDiv(){
     }
     for (let wk = 0; wk < 6; wk++) {
         for (let day = weekStartDay; day < weekStartDay+7; day++) {
+            console.log(divStartDate);
             if(day==weekStartDay && divStartDate.getMonth()>selectedMonth)break;
             let dayCell= document.createElement('div')
             dayCell.className='dayCell';
