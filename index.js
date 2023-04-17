@@ -180,33 +180,22 @@ async function fetchData(startingTime,endingTime,query){
         let stdate=new Date(fetchedData[index].start);
         let eddate=new Date(fetchedData[index].end);
 
-        // for (let dt = Math.max(new Date(stdate.getTime()-stdate%(24*60*60*1000)).getTime(),startingTime); dt <= Math.min(new Date(eddate.getTime()-eddate%(24*60*60*1000)).getTime(),endingTime-1); dt+=(24*60*60*1000)) {
-        //     let dateStr=new Date(dt).toDateString();
-        //     console.log('====================================');
-        //     console.log(new Date(new Date(dt).toDateString()));
-        //     console.log('====================================');
-        //     for (let t = startAvailableTime*60*1000; t <= endAvailableTime*60*1000; t+=timeInterval*60*1000){
-        //         let dte=new Date(new Date(dt).toDateString()).getTime();
-        //         console.log(new Date(stdate),new Date(dte+t),new Date(eddate));
-        //         // if(((stdate.getTime()+60*60*1000)<=dte+t && dte+t<(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)<(dte+t+timeInterval*60*1000) && (dte+t+timeInterval*60*1000)<=(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)>=(dte+t) && (dte+t+timeInterval*60*1000)>=(eddate.getTime()+60*60*1000))){
-        //         if(((stdate.getTime())<=dte+t && dte+t<(eddate.getTime())) || ((stdate.getTime())<(dte+t+timeInterval*60*1000) && (dte+t+timeInterval*60*1000)<=(eddate.getTime())) || ((stdate.getTime())>=(dte+t) && (dte+t+timeInterval*60*1000)>=(eddate.getTime()))){
-        //             if(!returnData[dateStr])returnData[dateStr]=[]
-        //                 returnData[dateStr].push(makeTimeStr(t/60000).str);
-        //         }
-        //     }
-        // }
         for (let dt = stdate.getTime(); dt <= eddate.getTime(); dt+=(24*60*60*1000)) {
-            let dateStr=new Date(dt).toDateString();
+            let dateStr=new Date(dt).toLocaleDateString();
             // console.log('====================================');
-            // console.log(new Date(new Date(dt).toDateString()));
+            // console.log(new Date(new Date(dt).toLocaleDateString()));
             // console.log('====================================');
-            for (let t = startAvailableTime*60*1000; t <= endAvailableTime*60*1000; t+=timeInterval*60*1000){
-                let dte=new Date(new Date(dt).toDateString()).getTime();
-                // console.log(new Date(stdate),new Date(dte+t),new Date(eddate));
-                // if(((stdate.getTime()+60*60*1000)<=dte+t && dte+t<(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)<(dte+t+timeInterval*60*1000) && (dte+t+timeInterval*60*1000)<=(eddate.getTime()+60*60*1000)) || ((stdate.getTime()+60*60*1000)>=(dte+t) && (dte+t+timeInterval*60*1000)>=(eddate.getTime()+60*60*1000))){
-                if(((stdate.getTime())<=dte+t && dte+t<(eddate.getTime())) || ((stdate.getTime())<(dte+t+timeInterval*60*1000) && (dte+t+timeInterval*60*1000)<=(eddate.getTime())) || ((stdate.getTime())>=(dte+t) && (dte+t+timeInterval*60*1000)>=(eddate.getTime()))){
+            for (let t = startAvailableTime; t <= endAvailableTime; t+=timeInterval){
+                let dte=new Date(new Date(dt).toLocaleDateString()).getTime();
+                let stTime=new Date(dt);
+                let edTime=new Date(dt);
+                stTime.setHours((t-t%60)/60)
+                stTime.setMinutes(t%60)
+                edTime.setHours((t+timeInterval -(t+timeInterval)%60)/60)
+                edTime.setMinutes((t+timeInterval)%60)
+                if(((stdate.getTime())<=stTime.getTime() && stTime.getTime()<(eddate.getTime())) || ((stdate.getTime())<(edTime.getTime()) && (edTime.getTime())<=(eddate.getTime())) || ((stdate.getTime())>=(stTime.getTime()) && (edTime.getTime())>=(eddate.getTime()))){
                     if(!returnData[dateStr])returnData[dateStr]=[]
-                        returnData[dateStr].push(makeTimeStr(t/60000).str);
+                        returnData[dateStr].push(makeTimeStr(t).str);
                 }
             }
         }
@@ -611,11 +600,9 @@ async function makeDayDiv(){
     // console.log(selectedYear,selectedMonth)
     dayCurrBtn.innerHTML=Months[selectedMonth]+" "+selectedYear;
     let divStartDate = new Date(0);
-    divStartDate.setHours(0)
-    divStartDate.setMinutes(0)
     divStartDate.setYear(selectedYear)
-    divStartDate.setMonth(selectedMonth)
     divStartDate.setDate(1);
+    divStartDate.setMonth(selectedMonth)
 
 
     dayDiv.innerHTML='Loading';
@@ -632,7 +619,7 @@ async function makeDayDiv(){
     }
     for (let wk = 0; wk < 6; wk++) {
         for (let day = weekStartDay; day < weekStartDay+7; day++) {
-            console.log(divStartDate);
+            console.log(divStartDate.getMonth());
             if(day==weekStartDay && divStartDate.getMonth()>selectedMonth)break;
             let dayCell= document.createElement('div')
             dayCell.className='dayCell';
@@ -641,16 +628,16 @@ async function makeDayDiv(){
                 var clickable=1;
                 dayCell.innerHTML=divStartDate.getDate();
                 dayCell.id=divStartDate.toISOString();
-                // console.log(divStartDate.toDateString(),"->",(endAvailableTime-startAvailableTime)/timeInterval);
-                if(OccupiedDays[divStartDate.toDateString()] && ((seletedMode==2 && OccupiedDays[divStartDate.toDateString()].length==(Math.floor((endAvailableTime-startAvailableTime)/timeInterval)+1)) || (seletedMode==1))){
+                // console.log(divStartDate.toLocaleDateString(),"->",(endAvailableTime-startAvailableTime)/timeInterval);
+                if(OccupiedDays[divStartDate.toLocaleDateString()] && ((seletedMode==2 && OccupiedDays[divStartDate.toLocaleDateString()].length==(Math.floor((endAvailableTime-startAvailableTime)/timeInterval)+1)) || (seletedMode==1))){
                     dayCell.classList.add('partiallyFilledDateCell')
                     clickable=0;
                 }
-                if((new Date(Today.toDateString()).getTime())>divStartDate.getTime()){
+                if(new Date().getTime()>divStartDate.getTime()){
                     dayCell.classList.add('pastDays')
                 }
-                // console.log(new Date(startYear,startMonth,startDate).toDateString())
-                if(startTime!=null && new Date(startYear,startMonth,startDate).toDateString()==divStartDate.toDateString()){
+                // console.log(new Date(startYear,startMonth,startDate).toLocaleDateString())
+                if(startTime!=null && new Date(startYear,startMonth,startDate).toLocaleDateString()==divStartDate.toLocaleDateString()){
                     dayCell.classList.add('selectedDateCell')
                     dayCell.classList.add('startingDateCell')
                     if(endDate==null || seletedMode==2){
@@ -705,17 +692,19 @@ async function makeDayDiv(){
 // ---------------------- TIME SECTION ----------------------
 timePreBtn.onclick=()=>{
     let timeDate=new Date(0)
+
     timeDate.setFullYear(selectedYear);
+    timeDate.setDate(1);
     timeDate.setMonth(selectedMonth);
     timeDate.setDate(selectedDate-1);
-    if(timeDate.getTime()<new Date(Today.toDateString()).getTime()){
+    if(timeDate.getTime()<new Date(Today.toLocaleDateString()).getTime()){
         alert("Those are Past Days")
         return;
     }
     selectedYear=timeDate.getFullYear();
     selectedMonth=timeDate.getMonth();
     selectedDate=timeDate.getDate();
-    // console.log(timeDate.toDateString())
+
     makeTimeDiv();
 }
 timeCurrBtn.onclick=()=>{
@@ -726,12 +715,13 @@ timeCurrBtn.onclick=()=>{
 timeNextBtn.onclick=()=>{
     let timeDate=new Date(0)
     timeDate.setFullYear(selectedYear);
+    timeDate.setDate(1);
     timeDate.setMonth(selectedMonth);
     timeDate.setDate(selectedDate+1);
     selectedYear=timeDate.getFullYear();
     selectedMonth=timeDate.getMonth();
     selectedDate=timeDate.getDate();
-    // console.log(timeDate.toDateString())
+
     makeTimeDiv()
 }
 function onClickTimeCell(time){
@@ -941,8 +931,13 @@ async function makeTimeDiv(){
         timeCell.innerHTML=timejson.str;
         timeCell.className='timeCell';
         timeCell.id=timejson.str;
-        if(OccupiedDays[new Date(selectedYear,selectedMonth,selectedDate).toDateString()]){
-            if(OccupiedDays[new Date(selectedYear,selectedMonth,selectedDate).toDateString()].includes(makeTimeStr(t).str)){
+        let dt=new Date();
+        dt.setDate(selectedDate);
+        dt.setMonth(selectedMonth);
+        dt.setFullYear(selectedYear);
+        console.log(dt.toLocaleDateString());
+        if(OccupiedDays[dt.toLocaleDateString()]){
+            if(OccupiedDays[dt.toLocaleDateString()].includes(makeTimeStr(t).str)){
                 timeCell.classList.add('occupiedTimeCell')
                 clickable=0;
             }
