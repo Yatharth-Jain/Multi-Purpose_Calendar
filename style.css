@@ -165,3 +165,23 @@ body{
 .occupiedTimeCell{
     background-color: rgb(199, 248, 125);
 }
+.refreshBtn{
+    position: absolute; 
+    left: 0; 
+    right: 0; 
+    margin-left: auto; 
+    margin-right: auto;
+    top: 120px;
+}
+.rotateOnce{
+    animation: refreshBtn 1s;
+}
+
+@keyframes refreshBtn {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(360deg);}
+}
+
+.hidden{
+    display: none;
+}

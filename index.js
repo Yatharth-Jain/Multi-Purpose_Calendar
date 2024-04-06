@@ -21,6 +21,9 @@ let selectClockLimit=document.getElementById('selectClockLimit')
 // Submit Button
 let submitButton=document.getElementById('submitButton');
 
+// Refresh Button
+let refreshBtn=document.getElementById('refreshBtn');
+
 // selectHolidays
 let selectHolidays=document.getElementById('selectHolidays')
 let checkboxDiv=document.getElementById('checkboxDiv')
@@ -55,7 +58,7 @@ let DayNames=["Sun","Mon","Tue","Wed","Thur","Fri","Sat"]
 let Time=[9,10,11,12,13,14,15,16,17]
 let startAvailableTime=makeTimeMin("9:00").time;
 let endAvailableTime=makeTimeMin("14:00").time;
-let weekStartDay = 0;
+let weekStartDay = 6;
 
 // Calender States
 let selectedYear;
@@ -109,11 +112,16 @@ function dateToTime(hr,min){
 }
 
 async function wholeFetch(){
-    var startDateFull = '2023-01-01T00:00:00' 
-    var endDateFull = '2025-12-31T23:59:59'  
+    let tempDate=new Date(Today.getTime()-5*24*60*60*1000);
+    console.log(Today)
+    var startDateFull = tempDate.toISOString();
+    tempDate.setFullYear(tempDate.getFullYear()+1);
+    var endDateFull = tempDate.toISOString();
+    console.log(startDateFull,endDateFull)
     const url = 'https://script.google.com/macros/s/AKfycbwajwkQpXyaE3w3bmAcsNz_eahtj8CvIIwL4W5fapjY_Qb-ugdbjrAAfv44QZ5UxEw9/exec' + '?startDate=' + startDateFull + '&endDate=' + endDateFull + '&calendarId=be8bsuqm01i0m5uhec7dc07kbc@group.calendar.google.com' + '&createEvent=' + false + '&allDayEvent=' + false;
     // const url = './json.json';
-    fetchedData=await fetch(url).then((response) => response.json())
+    fetchedData=await fetch(url).
+    then((response) => response.json())
         .then((json) =>{
             console.log("Fetched")
             console.log(json)
@@ -123,7 +131,9 @@ async function wholeFetch(){
             return json
             
         }
-    )
+        ).catch((error) => {
+            return {}
+        })
     return url;
 }
 
@@ -785,7 +795,7 @@ function onClickTimeCell(time){
             let stdate=new Date(0);
             stdate.setFullYear(selectedYear);
             stdate.setMonth(selectedMonth);
-            stdate=new Date(stdate.getTime()+((selectedDate-1)*24*60 + makeTimeMin(time).time + timeInterval)*60*1000);
+            stdate=new Date(stdate.getTime()+((selectedDate-1)*24*60 + makeTimeMin(time).time)*60*1000);
             startYear=selectedYear;
             startMonth=selectedMonth;
             startDate=selectedDate;
@@ -807,12 +817,12 @@ function onClickTimeCell(time){
             let stdate=new Date(0);
             stdate.setFullYear(selectedYear);
             stdate.setMonth(selectedMonth);
-            stdate=new Date(stdate.getTime()+((selectedDate-1)*24*60 + makeTimeMin(time).time + timeInterval)*60*1000);
+            stdate=new Date(stdate.getTime()+((selectedDate-1)*24*60 + makeTimeMin(time).time)*60*1000);
             endYear=selectedYear;
             endMonth=selectedMonth;
             endDate=selectedDate;
             endTime=stdate;
-            endClock=makeTimeStr(makeTimeMin(time).time+timeInterval).str;
+            endClock=makeTimeStr(makeTimeMin(time).time).str;
         }
         if(makeTimeMin(endClock).time-makeTimeMin(startClock).time>clockLimit*timeInterval){
             alert("Selected More time than set")
@@ -826,7 +836,7 @@ function onClickTimeCell(time){
             stdate.setMonth(selectedMonth);
             stdate=new Date(stdate.getTime()+((selectedDate-1)*24*60 + makeTimeMin(time).time)*60*1000);
             startClock=time;
-            pseudoEndClock=makeTimeStr(makeTimeMin(time).time+timeInterval).str;
+            pseudoEndClock=makeTimeStr(makeTimeMin(time).time).str;
             startYear=selectedYear;
             startMonth=selectedMonth;
             startDate=selectedDate;
@@ -836,7 +846,7 @@ function onClickTimeCell(time){
             return;
         }
         var possible=1;
-        for (let t = makeTimeMin(startClock).time; t < makeTimeMin(endClock).time; t+=timeInterval) {
+        for (let t = makeTimeMin(startClock).time; t <= makeTimeMin(endClock).time; t+=timeInterval) {
             if(document.getElementById(makeTimeStr(t).str).classList.contains('occupiedTimeCell')){
                 possible=0;
                 break;
@@ -891,7 +901,8 @@ function onMouseOverTimeCell(date){
             st=ed;
             ed=temp;
         }
-        if(ed-st >= clockLimit*timeInterval){
+        console.log(ed-st , (clockLimit+1)*timeInterval,(clockLimit)*timeInterval,clockLimit,timeInterval)
+        if(ed-st >= (clockLimit+1)*timeInterval){
             return;
         }
         
@@ -922,8 +933,7 @@ async function makeTimeDiv(){
     let OccupiedDays=(!(dataMonth==selectedMonth && dataYear==selectedYear)?await fetchData(new Date(selectedYear,selectedMonth).getTime(),new Date(selectedYear,selectedMonth+1).getTime()):generatedData);
     // console.log(OccupiedDays)
     timeDiv.innerHTML='';
-
-
+    let continousCount=0;
     for (let t = startAvailableTime; t <= endAvailableTime; t+=timeInterval) {
         let clickable=1;
         let timeCell=document.createElement('div');
@@ -935,11 +945,22 @@ async function makeTimeDiv(){
         dt.setDate(selectedDate);
         dt.setMonth(selectedMonth);
         dt.setFullYear(selectedYear);
-        console.log(dt.toLocaleDateString());
+        console.log(dt.toLocaleDateString(),OccupiedDays[dt.toLocaleDateString()]);
         if(OccupiedDays[dt.toLocaleDateString()]){
-            if(OccupiedDays[dt.toLocaleDateString()].includes(makeTimeStr(t).str)){
-                timeCell.classList.add('occupiedTimeCell')
-                clickable=0;
+            if(OccupiedDays[dt.toLocaleDateString()].includes(makeTimeStr(t).str) && OccupiedDays[dt.toLocaleDateString()].includes(makeTimeStr(t+timeInterval).str)){
+                if(continousCount>0){
+                    timeCell.classList.add('occupiedTimeCell')
+                    clickable=0;
+                }
+                continousCount++;
+            }
+            else{
+                if(continousCount==1 || (!OccupiedDays[dt.toLocaleDateString()].includes(makeTimeStr(t-2*timeInterval).str) && OccupiedDays[dt.toLocaleDateString()].includes(makeTimeStr(t-timeInterval).str) && !OccupiedDays[dt.toLocaleDateString()].includes(makeTimeStr(t).str))){
+                    let blankCell=document.createElement('div');
+                    blankCell.className='occupiedTimeCell';
+                    timeDiv.appendChild(blankCell);
+                }
+                continousCount=0;
             }
         }
         timeCell.onclick=function(time){
@@ -966,7 +987,7 @@ async function makeTimeDiv(){
             if(startClock!=null && makeTimeMin(startClock).time==t){
                 timeCell.classList.add('selectedTimeCell')
             }
-            if(endClock!=null && (makeTimeMin(startClock).time<=t &&  t<makeTimeMin(endClock).time)){
+            if(endClock!=null && (makeTimeMin(startClock).time<=t &&  t<=makeTimeMin(endClock).time)){
                 timeCell.classList.add('selectedTimeCell')
             }
         }
@@ -1081,7 +1102,7 @@ selectDaysLimit.onchange=()=>{
 
 selectClockLimit.onchange=()=>{
     if(selectClockLimit.value<1)selectClockLimit.value=1
-    clockLimit=selectClockLimit.value
+    clockLimit=parseInt(selectClockLimit.value)
 }
 
 
@@ -1192,13 +1213,23 @@ selectHolidays.onchange=()=>{
 }
 
 async function main(){
+    refreshBtn.className="hidden"
     yearDiv.innerHTML='Preparing'
     displayTime()
     wholeFetch().then(data=>{
-        // console.log(data)
         typeSelector.disabled=false
         resetCalender()
     })
+    // .catch(e=>{
+    //     yearDiv.innerHTML=''
+    //     refreshBtn.className="refreshBtn"
+    //     alert("Error Occured")
+    //     refreshBtn.onclick=()=>{
+    //         refreshBtn.className="refreshBtn";
+    //         main()
+    //     }
+    // })
     
 }
 main()
+
